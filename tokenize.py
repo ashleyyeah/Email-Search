@@ -8,8 +8,6 @@ import spacy
 
 nlp = spacy.load('en_core_web_sm')
 
-# nltk.download('punkt')
-
 # https://stackoverflow.com/questions/7166922/extracting-the-body-of-an-email-from-mbox-file-decoding-it-to-plain-text-regard
 def getcharsets(msg):
     charsets = set({})
