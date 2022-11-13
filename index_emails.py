@@ -1,8 +1,14 @@
 import os
 import re
 import mailbox
+from email.header import decode_header, make_header
 import json
 from bs4 import BeautifulSoup
+import spacy
+
+nlp = spacy.load('en_core_web_sm')
+
+# nltk.download('punkt')
 
 # https://stackoverflow.com/questions/7166922/extracting-the-body-of-an-email-from-mbox-file-decoding-it-to-plain-text-regard
 def getcharsets(msg):
@@ -10,7 +16,6 @@ def getcharsets(msg):
     for c in msg.get_charsets():
         if c is not None:
             charsets.update([c])
-    # print("charsets: " + charsets)
     return charsets
 
 def getBody(msg):
@@ -21,20 +26,43 @@ def getBody(msg):
         t=t.decode(charset)
     return t
 
-def strip_html_css_js(msg):
+def clean(msg):
+    # remove html formatting
     soup = BeautifulSoup(msg, "html.parser")  # create a new bs4 object from the html data loaded
     for script in soup(["script", "style"]):  # remove all javascript and stylesheet code
         script.extract()
-    # get text
+    
     text = soup.get_text()
-    # break into lines and remove leading and trailing space on each
     lines = (line.strip() for line in text.splitlines())
-    # break multi-headlines into a line each
     chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
-    # drop blank lines
     text = '\n'.join(chunk for chunk in chunks if chunk)
-    text = re.sub(r'http\S+', '', text)
+
+    # remove url links and unreadable characters + normalize text to lowercase
+    text = re.sub(r'http\S+', ' ', text)
     text = re.sub(r'[^a-zA-Z0-9 ]', ' ', text)
+    text = re.sub(r'\s+', ' ', text)
+    text = text.lower()
+
+    doc = nlp(text)
+    
+    # Tokenization and lemmatization
+    lemma_list = []
+    for token in doc:
+        lemma_list.append(token.lemma_)
+    
+    # Filter the stopwords
+    filtered_sentence =[] 
+    for word in lemma_list:
+        lexeme = nlp.vocab[word]
+        if lexeme.is_stop == False:
+            filtered_sentence.append(word) 
+
+    return filtered_sentence
+
+def clean_subject(subject):
+    text = str(make_header(decode_header(subject)))
+    text = re.sub(r'[^!-~]', ' ', text)
+    text = re.sub(r'\s+', ' ', text)
     return text
 
 mbox = mailbox.mbox('mail/emails.mbox')
@@ -46,15 +74,21 @@ if (os.path.exists("emails.json")):
     os.remove("emails.json")
 f = open("emails.json", "a")
 f.seek(0)
+
 for i, message in enumerate(mbox):
-    msgs["messages"].append({ 
-        "date": message['date'],
-        "from": message['from'],
-        "subject": strip_html_css_js(message['subject']),
-        "body": strip_html_css_js(getBody(message)) 
-    })
-    if i == 20:
-        break
+    try:
+        msgs["messages"].append({ 
+            "date": message['date'],
+            "from": message['from'],
+            "subject": clean_subject(message['subject']),
+            "body": clean(getBody(message)) 
+        })
+    except Exception as e: 
+        print(i)
+        print(e)
+
+    # if i == 1000:
+    #     break
 
 f.write(json.dumps(msgs, indent=4))
 f.close()

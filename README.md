@@ -1,3 +1,3 @@
-# CourseProject
+# Personalized Email Search
 
-Please fork this repository and paste the github link of your fork on Microsoft CMT. Detailed instructions are on Coursera under Week 1: Course Project Overview/Week 9 Activities.
+Using Gmail's mbox dump to create a personalized search engine for my inbox.
