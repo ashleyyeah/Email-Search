@@ -2,6 +2,7 @@ import os
 import re
 import mailbox
 from email.header import decode_header, make_header
+from email.utils import parsedate_to_datetime
 import json
 from bs4 import BeautifulSoup
 import spacy
@@ -35,6 +36,7 @@ def clean(msg):
     chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
     text = '\n'.join(chunk for chunk in chunks if chunk)
 
+
     # remove url links and unreadable characters + normalize text to lowercase
     text = re.sub(r'http\S+', ' ', text)
     text = re.sub(r'[^a-zA-Z0-9 ]', ' ', text)
@@ -49,13 +51,15 @@ def clean(msg):
         lemma_list.append(token.lemma_)
     
     # Filter the stopwords
-    filtered_sentence =[] 
+    filtered_sentence = [] 
     for word in lemma_list:
         lexeme = nlp.vocab[word]
         if lexeme.is_stop == False:
             filtered_sentence.append(word) 
 
-    return filtered_sentence
+    text = ' '.join(filtered_sentence)
+
+    return text
 
 def clean_subject(subject):
     text = str(make_header(decode_header(subject)))
@@ -74,9 +78,11 @@ f = open("emails.json", "a")
 f.seek(0)
 
 for i, message in enumerate(mbox):
+    if (message['x-gmail-labels'] == 'Chat'):
+        continue
     try:
         msgs["messages"].append({ 
-            "date": message['date'],
+            "date": str(parsedate_to_datetime(message['date'])),
             "from": message['from'],
             "subject": clean_subject(message['subject']),
             "body": clean(getBody(message)) 
