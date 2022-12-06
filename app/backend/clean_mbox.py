@@ -5,6 +5,7 @@ from email.header import decode_header, make_header
 from email.utils import parsedate_to_datetime
 import json
 from bs4 import BeautifulSoup
+import string
 import spacy
 
 nlp = spacy.load('en_core_web_sm')
@@ -25,7 +26,7 @@ def getBody(msg):
         t=t.decode(charset)
     return t
 
-def clean(msg):
+def clean(msg, raw=False):
     # remove html formatting
     soup = BeautifulSoup(msg, "html.parser")  # create a new bs4 object from the html data loaded
     for script in soup(["script", "style"]):  # remove all javascript and stylesheet code
@@ -39,8 +40,15 @@ def clean(msg):
 
     # remove url links and unreadable characters + normalize text to lowercase
     text = re.sub(r'http\S+', ' ', text)
+
+    if raw:
+        printable = set(string.printable)
+        text = ''.join(filter(lambda x: x in printable, text))
+        return text
+
     text = re.sub(r'[^a-zA-Z0-9 ]', ' ', text)
     text = re.sub(r'\s+', ' ', text)
+
     text = text.lower()
 
     doc = nlp(text)
@@ -85,7 +93,8 @@ for i, message in enumerate(mbox):
             "date": str(parsedate_to_datetime(message['date'])),
             "from": message['from'],
             "subject": clean_subject(message['subject']),
-            "body": clean(getBody(message)) 
+            "body": clean(getBody(message)),
+            "raw_body": clean(getBody(message), True)
         })
     except Exception as e: 
         print(i)
