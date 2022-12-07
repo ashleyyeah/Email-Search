@@ -27,7 +27,7 @@ def index_search(search_query):
             messages.append({
                 'title': results[i]['title'],
                 'date': str(results[i]['date']),
-                'body': results[i]['body']
+                # 'body': results[i]['body']
             })
         
         return messages
