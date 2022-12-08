@@ -4,6 +4,8 @@ from whoosh.fields import Schema, TEXT, ID, DATETIME
 from whoosh import index
 from datetime import datetime
 
+print("--------------Creating search index--------------")
+
 f = open('emails.json')
 data = json.load(f)
 

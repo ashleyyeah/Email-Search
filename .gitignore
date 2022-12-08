@@ -22,3 +22,4 @@ yarn-error.log*
 mail
 emails.json
 index_dir
+*.mbox

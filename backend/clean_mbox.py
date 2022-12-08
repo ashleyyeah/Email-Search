@@ -75,7 +75,7 @@ def clean_subject(subject):
     text = re.sub(r'\s+', ' ', text)
     return text
 
-mbox = mailbox.mbox('mail/emails.mbox')
+mbox = mailbox.mbox('emails.mbox')
 msgs = {
     "messages": []
 }
@@ -84,6 +84,8 @@ if (os.path.exists("emails.json")):
     os.remove("emails.json")
 f = open("emails.json", "a")
 f.seek(0)
+
+print("--------------Start email cleaning--------------")
 
 for i, message in enumerate(mbox):
     if (message['x-gmail-labels'] == 'Chat'):
