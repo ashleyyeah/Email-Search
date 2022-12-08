@@ -12,6 +12,7 @@ app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 def search():
     # Call the Python function here
     query = request.args['query']
+    print(query)
     result = index_search(query)
     return jsonify(result)
 
