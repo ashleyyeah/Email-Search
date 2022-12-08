@@ -2,6 +2,7 @@ import json
 import os, os.path
 from whoosh.fields import Schema, TEXT, ID, DATETIME
 from whoosh import index
+from whoosh.analysis import FancyAnalyzer
 from datetime import datetime
 
 print("--------------Creating search index--------------")
@@ -9,10 +10,21 @@ print("--------------Creating search index--------------")
 f = open('emails.json')
 data = json.load(f)
 
-schema = Schema(title=TEXT(stored=True), 
+analyzer = FancyAnalyzer(
+            expression='\\s+', 
+            stoplist=frozenset(['and', 'is', 'it', 'an', 'as', 'at', 'have', 'in', 'yet', 'if', 'from', 'for', 'when', 'by', 'to', 'you', 'be', 'we', 'that', 'may', 'not', 'with', 'tbd', 'a', 'on', 'your', 'this', 'of', 'us', 'will', 'can', 'the', 'or', 'are']), 
+            minsize=2, 
+            maxsize=None, 
+            gaps=True, 
+            splitwords=True, 
+            splitnums=True, 
+            mergewords=False, 
+            mergenums=False)
+
+schema = Schema(title=TEXT(stored=True, analyzer=analyzer), 
                 date=DATETIME(stored=True, sortable=True), 
                 path=ID(stored=True),
-                body=TEXT(stored=True), 
+                body=TEXT(stored=True, analyzer=analyzer), 
                 content=TEXT(stored = True))
 
 if not os.path.exists("index_dir"):

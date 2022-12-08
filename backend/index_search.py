@@ -1,6 +1,6 @@
 from whoosh import index, qparser
-from whoosh.qparser import QueryParser
 from whoosh.sorting import FieldFacet
+from whoosh.scoring import BM25F
 import spacy
 
 nlp = spacy.load('en_core_web_sm')
@@ -32,16 +32,16 @@ def index_search(search_query):
     
     q = mp.parse(search_query)
 
-    facet = FieldFacet("date", reverse=True)
+    # facet = FieldFacet("date", reverse=True)
+    w = BM25F(title_B=0.75, content_B=0.8, K1=1.1)
 
-    with ix.searcher() as s:
+    with ix.searcher(weighting=w) as s:
         results = s.search(q, terms=True, limit = 20)
         print("Search Results: ")
 
         messages = []
         
         for i in range(min(len(results), 20)):
-            # print(results[i]['title'], results[i]['date'])
             messages.append({
                 'title': results[i]['title'],
                 'date': results[i]['date'].strftime('%Y/%m/%d'),
