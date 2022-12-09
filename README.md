@@ -1,6 +1,10 @@
 # Personalized Email Search Extension for Your Browser
 
-### A local chrome extension that can be used to search your emails using Gmail's mbox dumps.
+### A local chrome extension that can be used to search your emails using Gmail's mbox dumps.  
+
+<br>
+
+### Tutorial Video Link: https://drive.google.com/file/d/1qh5PhN8BvJC0O1fBLAIAEE6hthWDPVrX/view?usp=sharing
 
 <br>
 
@@ -118,7 +122,7 @@ Then, you can go ahead and execute the script like so:
 ./search_api.sh
 ```
 
-This will clean your Gmail mbox file, create an index for all of your emails, and then open the search engine server on your `localhost:5000`. Please leave the flask server running as it is required for the extension to work.
+This will clean your Gmail mbox file and create an index for all of your emails. This whole process may take a few minutes, so don't be concerned if nothing happens for awhile. Once done, the script will open the search engine server on your `localhost:5000`. Please leave the flask server running as it is required for the extension to work.
 
 ## 3) Adding the Chrome Extension <a name = "chrome_extension"></a>
 
