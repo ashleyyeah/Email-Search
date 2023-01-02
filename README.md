@@ -1,12 +1,8 @@
 # Personalized Email Search Extension for Your Browser
 
-### A local chrome extension that can be used to search your emails using Gmail's mbox dumps.  
+A local chrome extension that can be used to search your emails using Gmail's mbox dumps.  
 
-<br>
-
-### Tutorial Video Link: https://drive.google.com/file/d/1qh5PhN8BvJC0O1fBLAIAEE6hthWDPVrX/view?usp=sharing
-
-<br>
+Tutorial Video Link: https://drive.google.com/file/d/1qh5PhN8BvJC0O1fBLAIAEE6hthWDPVrX/view?usp=sharing
 
 # Table of Contents
 
@@ -17,8 +13,6 @@
     - [Downloading Your Gmail Takeout](#gmail)
     - [Running the Search Backend](#search)
     - [Adding the Chrome Extension](#chrome_extension)
-
-<br>
 
 # Project Stack <a name = "stack"></a>
 
